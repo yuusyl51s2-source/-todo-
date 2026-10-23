@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>やさしい淡色 ToDo - リマインダー通知付き</title>
+
+  <!-- Google Fonts: M PLUS Rounded 1c -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================================
+       カラーパレット & ベーススタイル（濃い茶色文字 & 淡色ベージュ）
+       ========================================================= */
+    :root {
+      /* メインベースカラー */
+      --bg-main: #FAF8F5;          /* 全体背景: オフホワイト */
+      --bg-card: #F2EBE1;          /* カード・枠背景: 薄ベージュ */
+      --bg-card-sub: #E8DFD3;      /* 入力欄・サブカード背景: やや濃いめの薄ベージュ */
+      
+      /* 濃い茶色のテキストカラー */
+      --text-main: #3D312A;        /* メインテキスト: 濃いダークブラウン */
+      --text-sub: #6B5B52;         /* サブテキスト・日付など: ブラウン */
+      --text-muted: #8C7A70;       /* 補足・プレースホルダー: マイルドブラウン */
+      --text-done: #9C8C83;        /* 完了線テキスト */
+
+      /* アクセント・ボタン色 */
+      --btn-bg: #8C7A70;           /* プライマリボタン背景 */
+      --btn-text: #FFFFFF;         /* ボタン内白文字 */
+      --btn-hover: #736359;
+      --border-color: #DDD4C8;     /* 淡いボーダーライン */
+      --border-focus: #B5A499;
+
+      /* パステル・ペールトーンカラーセット（カテゴリ用） */
+      --cat-rose-bg: #F9ECEC; --cat-rose-border: #E8C8C8;
+      --cat-honey-bg: #FCF4E3; --cat-honey-border: #F0DAAD;
+      --cat-sage-bg: #EEF4EE; --cat-sage-border: #C6DBC6;
+      --cat-lavender-bg: #F3EEF8; --cat-lavender-border: #D8C8EA;
+      --cat-mint-bg: #E8F5F1; --cat-mint-border: #BCE2D7;
+      --cat-apricot-bg: #FAF0E6; --cat-apricot-border: #F2D0B6;
+      --cat-sky-bg: #EBF3F9; --cat-sky-border: #BCD6EA;
+      --cat-tea-bg: #F4EFEB; --cat-tea-border: #D3C5B8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'M PLUS Rounded 1c', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--text-main);
+    }
+
+    body {
+      background-color: var(--bg-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* ---------------------------------------------------------
+       ヘッダー・ワークスペース（タスク表）切替領域
+       --------------------------------------------------------- */
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 24px;
+      background: var(--bg-card);
+      padding: 20px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: 0 4px 15px rgba(61, 49, 42, 0.03);
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .workspace-selector-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+
+    .workspace-select {
+      background: #FFFFFF;
+      border: 1.5px solid var(--border-color);
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 1.15rem;
+      font-weight: 700;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s;
+      max-width: 280px;
+    }
+
+    .workspace-select:focus {
+      border-color: var(--border-focus);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    /* ボタン共通パーツ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid var(--border-color);
+      background: #FFFFFF;
+      color: var(--text-main);
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-sub);
+    }
+
+    .btn-primary {
+      background: var(--btn-bg);
+      color: var(--btn-text) !important;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background: var(--btn-hover);
+    }
+
+    .btn-notify {
+      background: #FFF8E7;
+      border-color: #F0DAAD;
+    }
+
+    .btn-notify.active {
+      background: #EAF5EA;
+      border-color: #C6DBC6;
+      color: #386B38 !important;
+    }
+
+    .btn-danger {
+      background: #FDF2F2;
+      color: #C55A5A !important;
+      border-color: #F8D7D7;
+    }
+
+    .btn-danger:hover {
+      background: #F8E5E5;
+    }
+
+    .btn-sm {
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+    }
+
+    /* ---------------------------------------------------------
+       タスク入力カード
+       --------------------------------------------------------- */
+    .add-card {
+      background: #FFFFFF;
+      padding: 20px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+      box-shadow: 0 4px 15px rgba(61, 49, 42, 0.02);
+    }
+
+    .add-card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"], input[type="date"], select {
+      padding: 10px 14px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 0.92rem;
+      background: var(--bg-main);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input[type="text"]::placeholder {
+      color: var(--text-muted);
+    }
+
+    input[type="text"]:focus, input[type="date"]:focus, select:focus {
+      border-color: var(--border-focus);
+      background: #FFFFFF;
+    }
+
+    .input-title {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .input-cat, .input-date {
+      min-width: 150px;
+    }
+
+    .btn-add {
+      align-self: flex-end;
+      padding: 10px 20px;
+    }
+
+    /* ---------------------------------------------------------
+       フィルタータブ
+       --------------------------------------------------------- */
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+      scrollbar-width: thin;
+    }
+
+    .filter-tab {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .filter-tab.active {
+      background: var(--btn-bg);
+      color: #FFFFFF !important;
+      border-color: var(--btn-bg);
+    }
+
+    /* ---------------------------------------------------------
+       タスクリスト表示
+       --------------------------------------------------------- */
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-item {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 8px rgba(61, 49, 42, 0.02);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .task-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(61, 49, 42, 0.05);
+    }
+
+    .task-checkbox {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--btn-bg);
+      cursor: pointer;
+    }
+
+    .task-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .task-title {
+      font-size: 0.95rem;
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    .task-item.completed .task-title {
+      text-decoration: line-through;
+      color: var(--text-done);
+    }
+
+    .task-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border: 1px solid transparent;
+    }
+
+    .date-badge {
+      font-size: 0.78rem;
+      color: var(--text-sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .date-badge.urgent {
+      color: #B24242;
+      font-weight: 700;
+    }
+
+    .task-item-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .cat-select-mini {
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+      background: var(--bg-main);
+      cursor: pointer;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      opacity: 0.6;
+      transition: opacity 0.2s;
+      padding: 4px;
+    }
+
+    .icon-btn:hover {
+      opacity: 1;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      border-radius: 16px;
+      border: 1px dashed var(--border-color);
+    }
+
+    /* ---------------------------------------------------------
+       モーダル画面
+       --------------------------------------------------------- */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(61, 49, 42, 0.35);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(61, 49, 42, 0.15);
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .modal-body {
+      overflow-y: auto;
+      flex: 1;
+      padding-right: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .cat-edit-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .cat-edit-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-main);
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+    }
+
+    .cat-edit-item input[type="text"] {
+      flex: 1;
+      padding: 6px 10px;
+      background: #FFFFFF;
+    }
+
+    .color-picker-select {
+      padding: 6px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    /* カラーテーマクラス */
+    .cat-color-rose { background-color: var(--cat-rose-bg); border-color: var(--cat-rose-border); }
+    .cat-color-honey { background-color: var(--cat-honey-bg); border-color: var(--cat-honey-border); }
+    .cat-color-sage { background-color: var(--cat-sage-bg); border-color: var(--cat-sage-border); }
+    .cat-color-lavender { background-color: var(--cat-lavender-bg); border-color: var(--cat-lavender-border); }
+    .cat-color-mint { background-color: var(--cat-mint-bg); border-color: var(--cat-mint-border); }
+    .cat-color-apricot { background-color: var(--cat-apricot-bg); border-color: var(--cat-apricot-border); }
+    .cat-color-sky { background-color: var(--cat-sky-bg); border-color: var(--cat-sky-border); }
+    .cat-color-tea { background-color: var(--cat-tea-bg); border-color: var(--cat-tea-border); }
+
+    textarea.json-textarea {
+      width: 100%;
+      height: 140px;
+      border: 1.5px solid var(--border-color);
+      border-radius: 12px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 0.82rem;
+      background: var(--bg-main);
+      resize: vertical;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 12px 8px; }
+      .top-bar { flex-direction: column; align-items: stretch; }
+      .workspace-select { max-width: 100%; }
+      .header-actions { justify-content: flex-end; }
+      .input-row { flex-direction: column; }
+      .btn-add { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- ヘッダー＆タスク表切替領域 -->
+  <header>
+    <div class="top-bar">
+      <div class="workspace-selector-wrapper">
+        <select id="workspaceSelect" class="workspace-select" onchange="switchWorkspace(this.value)">
+          <!-- 動的生成 -->
+        </select>
+        <button class="btn btn-sm" onclick="promptCreateWorkspace()" title="新しいタスク管理表を作成">＋ 新規作成</button>
+        <button class="btn btn-sm" onclick="openWorkspaceManageModal()" title="現在のタスク表を管理">⚙ 管理</button>
+      </div>
+
+      <div class="header-actions">
+        <button id="notifyBtn" class="btn btn-sm btn-notify" onclick="requestNotificationPermission()">🔔 通知を許可</button>
+        <button class="btn btn-sm" onclick="openCatManageModal()">🏷️ カテゴリ編集</button>
+        <button class="btn btn-sm" onclick="openDataModal()">🔄 バックアップ</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- タスク追加カード -->
+  <div class="add-card">
+    <div class="add-card-title">✨ 新しいタスクを追加</div>
+    <div class="input-group">
+      <div class="input-row">
+        <input type="text" id="taskTitle" class="input-title" placeholder="やることを入力してください..." onkeydown="if(event.key==='Enter') addTask()">
+      </div>
+      <div class="input-row">
+        <select id="taskCategory" class="input-cat"></select>
+        <input type="date" id="taskDueDate" class="input-date">
+        <button class="btn btn-primary btn-add" onclick="addTask()">追加する</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- フィルタータブ -->
+  <div class="filter-tabs" id="filterTabs">
+    <!-- 動的生成 -->
+  </div>
+
+  <!-- タスク一覧 -->
+  <div class="task-list" id="taskList">
+    <!-- 動的生成 -->
+  </div>
+</div>
+
+<!-- モーダル：カテゴリ管理 -->
+<div class="modal-overlay" id="catModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">🏷️ カテゴリの編集・追加</div>
+      <button class="icon-btn" onclick="closeModal('catModal')">✖</button>
+    </div>
+    <div class="modal-body">
+      <div class="cat-edit-list" id="catEditList">
+        <!-- 動的生成 -->
+      </div>
+      <button class="btn" style="width: 100%; margin-top: 8px;" onclick="addNewCategoryField()">＋ 新しいカテゴリを追加</button>
+    </div>
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn btn-primary" onclick="saveCategories()">完了・保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- モーダル：タスク表（ワークスペース）管理 -->
+<div class="modal-overlay" id="wsModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">⚙ タスク管理表の設定</div>
+      <button class="icon-btn" onclick="closeModal('wsModal')">✖</button>
+    </div>
+    <div class="modal-body">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <label style="font-size: 0.9rem; font-weight: 700;">タスク表の名前:</label>
+        <input type="text" id="wsNameInput" placeholder="例: プライベート、仕事、旅行準備">
+      </div>
+      <hr style="border: none; border-top: 1px solid var(--border-color); margin: 12px 0;">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-size: 0.85rem; color: var(--text-sub);">このタスク表を削除する:</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteCurrentWorkspace()">タスク表を削除</button>
+      </div>
+    </div>
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn btn-primary" onclick="saveWorkspaceName()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- モーダル：データ入出力 -->
+<div class="modal-overlay" id="dataModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">🔄 データの出力・取り込み</div>
+      <button class="icon-btn" onclick="closeModal('dataModal')">✖</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 0.85rem; color: var(--text-sub);">
+        すべてのタスク表とデータのバックアップ・復元を行えます。コピーして別の端末（スマホやPC）に貼り付けることができます。
+      </p>
+      <textarea id="jsonArea" class="json-textarea" placeholder="ここにバックアップデータを貼り付け..."></textarea>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="btn" onclick="copyDataText()">📋 データをコピー</button>
+        <button class="btn btn-primary" onclick="importDataText()">📥 データを復元・読み込み</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* =========================================================
+     カラーマスター＆デフォルト初期値設定
+     ========================================================= */
+  const COLOR_OPTIONS = [
+    { key: 'rose', name: 'ダスティローズ', class: 'cat-color-rose' },
+    { key: 'honey', name: 'ハニーイエロー', class: 'cat-color-honey' },
+    { key: 'sage', name: 'セージグリーン', class: 'cat-color-sage' },
+    { key: 'lavender', name: 'ソフトラベンダー', class: 'cat-color-lavender' },
+    { key: 'mint', name: 'ペパーミント', class: 'cat-color-mint' },
+    { key: 'apricot', name: 'アプリコット', class: 'cat-color-apricot' },
+    { key: 'sky', name: 'スカイブルー', class: 'cat-color-sky' },
+    { key: 'tea', name: 'ミルクティー', class: 'cat-color-tea' }
+  ];
+
+  const DEFAULT_CATEGORIES = [
+    { id: 'cat_1', name: '🔴 今すぐ・1週間以内', color: 'rose' },
+    { id: 'cat_2', name: '🟡 2週間〜1ヶ月以内', color: 'honey' },
+    { id: 'cat_3', name: '🔵 半年以内', color: 'sage' },
+    { id: 'cat_4', name: '🟣 期限なし・暇な時', color: 'lavender' }
+  ];
+
+  const STORAGE_KEY = 'pastel_multi_todo_app_data_v1';
+  const NOTIFIED_KEY = 'pastel_todo_notified_tasks_v1';
+
+  /* =========================================================
+     アプリケーション状態（State）
+     ========================================================= */
+  let appState = {
+    currentWorkspaceId: 'default_ws',
+    workspaces: {
+      'default_ws': {
+        id: 'default_ws',
+        name: 'メインのタスク表',
+        categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+        tasks: [
+          { id: '1', title: '部屋の掃除・片付け', categoryId: 'cat_1', dueDate: getRelativeDateStr(2), completed: false },
+          { id: '2', title: '書類の整理と提出', categoryId: 'cat_2', dueDate: getRelativeDateStr(14), completed: false },
+          { id: '3', title: '資格試験の勉強・計画', categoryId: 'cat_3', dueDate: getRelativeDateStr(90), completed: false },
+          { id: '4', title: '読みたい本リストの作成', categoryId: 'cat_4', dueDate: '', completed: false }
+        ]
+      }
+    }
+  };
+
+  let activeFilter = 'ALL';
+
+  function getRelativeDateStr(addDays) {
+    const d = new Date();
+    d.setDate(d.getDate() + addDays);
+    return d.toISOString().split('T')[0];
+  }
+
+  /* =========================================================
+     初期化・LocalStorage読み書き
+     ========================================================= */
+  function init() {
+    loadFromStorage();
+    renderWorkspaceSelect();
+    renderCategorySelect();
+    renderFilterTabs();
+    renderTasks();
+    updateNotifyButtonUI();
+
+    // 通知の自動監視開始（起動時＋1時間ごと）
+    checkDueTasksForNotification();
+    setInterval(checkDueTasksForNotification, 3600000);
+  }
+
+  function saveToStorage() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+  }
+
+  function loadFromStorage() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+      try {
+        const parsed = JSON.parse(data);
+        if (parsed && parsed.workspaces) {
+          appState = parsed;
+        }
+      } catch(e) {
+        console.error("Storage load failed:", e);
+      }
+    }
+  }
+
+  function getCurrentWorkspace() {
+    if (!appState.workspaces[appState.currentWorkspaceId]) {
+      const keys = Object.keys(appState.workspaces);
+      if (keys.length > 0) {
+        appState.currentWorkspaceId = keys[0];
+      } else {
+        appState.workspaces['default_ws'] = {
+          id: 'default_ws',
+          name: 'メインのタスク表',
+          categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+          tasks: []
+        };
+        appState.currentWorkspaceId = 'default_ws';
+      }
+    }
+    return appState.workspaces[appState.currentWorkspaceId];
+  }
+
+  /* =========================================================
+     通知（Notification）管理機能
+     ========================================================= */
+  function requestNotificationPermission() {
+    if (!("Notification" in window)) {
+      alert("お使いのブラウザは通知機能をサポートしていません。");
+      return;
+    }
+
+    Notification.requestPermission().then(permission => {
+      updateNotifyButtonUI();
+      if (permission === "granted") {
+        new Notification("🌸 通知が許可されました", {
+          body: "タスクの期限が3日前になると、ここでお知らせします！",
+          icon: "https://fav.farm/🌸"
+        });
+        checkDueTasksForNotification();
+      } else if (permission === "denied") {
+        alert("ブラウザの設定で通知がブロックされています。ブラウザの設定から許可に変更してください。");
+      }
+    });
+  }
+
+  function updateNotifyButtonUI() {
+    const btn = document.getElementById('notifyBtn');
+    if (!("Notification" in window)) {
+      btn.style.display = 'none';
+      return;
+    }
+
+    if (Notification.permission === "granted") {
+      btn.textContent = "🔔 通知オン";
+      btn.classList.add("active");
+    } else {
+      btn.textContent = "🔔 通知を許可";
+      btn.classList.remove("active");
+    }
+  }
+
+  /* 期限3日前の判定・通知発行ロジック */
+  function checkDueTasksForNotification() {
+    if (!("Notification" in window) || Notification.permission !== "granted") return;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let notifiedMap = {};
+    try {
+      notifiedMap = JSON.parse(localStorage.getItem(NOTIFIED_KEY) || '{}');
+    } catch(e) {}
+
+    // 全てのタスク表をスキャン
+    Object.values(appState.workspaces).forEach(ws => {
+      ws.tasks.forEach(task => {
+        if (task.completed || !task.dueDate) return;
+
+        const dueDate = new Date(task.dueDate + 'T00:00:00');
+        const diffTime = dueDate.getTime() - today.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        // 期限まで3日以内（3日, 2日, 1日, 当日, またはすでに期限超過）
+        if (diffDays <= 3) {
+          const notifyKey = `${task.id}_${task.dueDate}_${diffDays <= 0 ? 'due' : diffDays}`;
+
+          if (!notifiedMap[notifyKey]) {
+            let message = '';
+            if (diffDays < 0) {
+              message = `【期限超過】「${task.title}」の期限が過ぎています！`;
+            } else if (diffDays === 0) {
+              message = `【本日が期限】「${task.title}」は今日が期限です！`;
+            } else {
+              message = `【あと${diffDays}日】「${task.title}」の期限が近づいています（${task.dueDate}）`;
+            }
+
+            new Notification(`⏰ タスクリマインダー (${ws.name})`, {
+              body: message,
+              icon: "https://fav.farm/⏰"
+            });
+
+            notifiedMap[notifyKey] = true;
+          }
+        }
+      });
+    });
+
+    localStorage.setItem(NOTIFIED_KEY, JSON.stringify(notifiedMap));
+  }
+
+  /* =========================================================
+     ワークスペース（タスク表）操作
+     ========================================================= */
+  function renderWorkspaceSelect() {
+    const select = document.getElementById('workspaceSelect');
+    select.innerHTML = '';
+
+    Object.values(appState.workspaces).forEach(ws => {
+      const opt = document.createElement('option');
+      opt.value = ws.id;
+      opt.textContent = `📋 ${ws.name}`;
+      if (ws.id === appState.currentWorkspaceId) opt.selected = true;
+      select.appendChild(opt);
+    });
+  }
+
+  function switchWorkspace(wsId) {
+    if (appState.workspaces[wsId]) {
+      appState.currentWorkspaceId = wsId;
+      activeFilter = 'ALL';
+      saveToStorage();
+      renderCategorySelect();
+      renderFilterTabs();
+      renderTasks();
+    }
+  }
+
+  function promptCreateWorkspace() {
+    const name = prompt("新しいタスク管理表の名前を入力してください:\n(例: 仕事用、プライベート、イベント準備)", "新しいタスク表");
+    if (name && name.trim()) {
+      const newId = 'ws_' + Date.now();
+      appState.workspaces[newId] = {
+        id: newId,
+        name: name.trim(),
+        categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
+        tasks: []
+      };
+      appState.currentWorkspaceId = newId;
+      activeFilter = 'ALL';
+      saveToStorage();
+      renderWorkspaceSelect();
+      renderCategorySelect();
+      renderFilterTabs();
+      renderTasks();
+    }
+  }
+
+  function openWorkspaceManageModal() {
+    const ws = getCurrentWorkspace();
+    document.getElementById('wsNameInput').value = ws.name;
+    openModal('wsModal');
+  }
+
+  function saveWorkspaceName() {
+    const ws = getCurrentWorkspace();
+    const name = document.getElementById('wsNameInput').value.trim();
+    if (name) {
+      ws.name = name;
+      saveToStorage();
+      renderWorkspaceSelect();
+      closeModal('wsModal');
+    }
+  }
+
+  function deleteCurrentWorkspace() {
+    const keys = Object.keys(appState.workspaces);
+    if (keys.length <= 1) {
+      alert("これ以上タスク表を削除することはできません。（最低1つのタスク表が必要です）");
+      return;
+    }
+    const ws = getCurrentWorkspace();
+    if (confirm(`タスク表「${ws.name}」を削除してもよろしいですか？\n※ 含まれるすべてのタスクも削除されます。`)) {
+      delete appState.workspaces[ws.id];
+      appState.currentWorkspaceId = Object.keys(appState.workspaces)[0];
+      saveToStorage();
+      renderWorkspaceSelect();
+      renderCategorySelect();
+      renderFilterTabs();
+      renderTasks();
+      closeModal('wsModal');
+    }
+  }
+
+  /* =========================================================
+     UI レンダリング（カテゴリ・フィルター・タスク）
+     ========================================================= */
+  function renderCategorySelect() {
+    const ws = getCurrentWorkspace();
+    const select = document.getElementById('taskCategory');
+    select.innerHTML = '';
+    ws.categories.forEach(cat => {
+      const opt = document.createElement('option');
+      opt.value = cat.id;
+      opt.textContent = cat.name;
+      select.appendChild(opt);
+    });
+  }
+
+  function renderFilterTabs() {
+    const ws = getCurrentWorkspace();
+    const container = document.getElementById('filterTabs');
+    container.innerHTML = '';
+
+    const allTab = document.createElement('button');
+    allTab.className = `filter-tab ${activeFilter === 'ALL' ? 'active' : ''}`;
+    allTab.textContent = `すべて (${ws.tasks.length})`;
+    allTab.onclick = () => setFilter('ALL');
+    container.appendChild(allTab);
+
+    ws.categories.forEach(cat => {
+      const count = ws.tasks.filter(t => t.categoryId === cat.id).length;
+      const tab = document.createElement('button');
+      tab.className = `filter-tab ${activeFilter === cat.id ? 'active' : ''}`;
+      tab.textContent = `${cat.name} (${count})`;
+      tab.onclick = () => setFilter(cat.id);
+      container.appendChild(tab);
+    });
+  }
+
+  function setFilter(catId) {
+    activeFilter = catId;
+    renderFilterTabs();
+    renderTasks();
+  }
+
+  function sortTasksByDueDate(tasks) {
+    return tasks.slice().sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      if (!a.dueDate && !b.dueDate) return a.id - b.id;
+      if (!a.dueDate) return 1;
+      if (!b.dueDate) return -1;
+      if (a.dueDate !== b.dueDate) {
+        return a.dueDate.localeCompare(b.dueDate);
+      }
+      return a.id - b.id;
+    });
+  }
+
+  function renderTasks() {
+    const ws = getCurrentWorkspace();
+    const listEl = document.getElementById('taskList');
+    listEl.innerHTML = '';
+
+    let filtered = ws.tasks;
+    if (activeFilter !== 'ALL') {
+      filtered = ws.tasks.filter(t => t.categoryId === activeFilter);
+    }
+
+    if (filtered.length === 0) {
+      listEl.innerHTML = `<div class="empty-state">🌸 タスクはありません</div>`;
+      return;
+    }
+
+    const sorted = sortTasksByDueDate(filtered);
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    sorted.forEach(task => {
+      const cat = ws.categories.find(c => c.id === task.categoryId) || { name: '未分類', color: 'tea' };
+      const colorObj = COLOR_OPTIONS.find(c => c.key === cat.color) || COLOR_OPTIONS[0];
+
+      let dateHtml = '';
+      if (task.dueDate) {
+        const isUrgent = !task.completed && task.dueDate <= todayStr;
+        dateHtml = `
+          <span class="date-badge ${isUrgent ? 'urgent' : ''}">
+            📅 ${task.dueDate} ${isUrgent ? '⚠️' : ''}
+          </span>
+        `;
+      }
+
+      let catOptionsHtml = ws.categories.map(c => `
+        <option value="${c.id}" ${c.id === task.categoryId ? 'selected' : ''}>${c.name}</option>
+      `).join('');
+
+      const item = document.createElement('div');
+      item.className = `task-item ${task.completed ? 'completed' : ''}`;
+      item.innerHTML = `
+        <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask('${task.id}')">
+        <div class="task-content">
+          <div class="task-title">${escapeHtml(task.title)}</div>
+          <div class="task-meta">
+            <span class="cat-badge ${colorObj.class}">${cat.name}</span>
+            ${dateHtml}
+          </div>
+        </div>
+        <div class="task-item-actions">
+          <select class="cat-select-mini" onchange="changeTaskCategory('${task.id}', this.value)">
+            ${catOptionsHtml}
+          </select>
+          <button class="icon-btn" onclick="deleteTask('${task.id}')" title="削除">🗑️</button>
+        </div>
+      `;
+
+      listEl.appendChild(item);
+    });
+  }
+
+  /* =========================================================
+     タスクの追加・編集・削除
+     ========================================================= */
+  function addTask() {
+    const ws = getCurrentWorkspace();
+    const titleInput = document.getElementById('taskTitle');
+    const catSelect = document.getElementById('taskCategory');
+    const dateInput = document.getElementById('taskDueDate');
+
+    const title = titleInput.value.trim();
+    if (!title) return;
+
+    const newTask = {
+      id: String(Date.now()),
+      title: title,
+      categoryId: catSelect.value || (ws.categories[0] ? ws.categories[0].id : ''),
+      dueDate: dateInput.value,
+      completed: false
+    };
+
+    ws.tasks.push(newTask);
+    saveToStorage();
+
+    titleInput.value = '';
+    dateInput.value = '';
+
+    renderFilterTabs();
+    renderTasks();
+    checkDueTasksForNotification();
+  }
+
+  function toggleTask(id) {
+    const ws = getCurrentWorkspace();
+    const task = ws.tasks.find(t => t.id === id);
+    if (task) {
+      task.completed = !task.completed;
+      saveToStorage();
+      renderTasks();
+    }
+  }
+
+  function changeTaskCategory(taskId, newCatId) {
+    const ws = getCurrentWorkspace();
+    const task = ws.tasks.find(t => t.id === taskId);
+    if (task) {
+      task.categoryId = newCatId;
+      saveToStorage();
+      renderFilterTabs();
+      renderTasks();
+    }
+  }
+
+  function deleteTask(id) {
+    const ws = getCurrentWorkspace();
+    ws.tasks = ws.tasks.filter(t => t.id !== id);
+    saveToStorage();
+    renderFilterTabs();
+    renderTasks();
+  }
+
+  /* =========================================================
+     カテゴリ編集モーダルの処理
+     ========================================================= */
+  let tempCategories = [];
+
+  function openCatManageModal() {
+    const ws = getCurrentWorkspace();
+    tempCategories = JSON.parse(JSON.stringify(ws.categories));
+    renderCatEditList();
+    openModal('catModal');
+  }
+
+  function renderCatEditList() {
+    const container = document.getElementById('catEditList');
+    container.innerHTML = '';
+
+    tempCategories.forEach((cat, index) => {
+      const row = document.createElement('div');
+      row.className = 'cat-edit-item';
+
+      let colorOptionsHtml = COLOR_OPTIONS.map(co => `
+        <option value="${co.key}" ${co.key === cat.color ? 'selected' : ''}>${co.name}</option>
+      `).join('');
+
+      row.innerHTML = `
+        <input type="text" value="${escapeHtml(cat.name)}" onchange="tempCategories[${index}].name = this.value.trim()">
+        <select class="color-picker-select" onchange="tempCategories[${index}].color = this.value">
+          ${colorOptionsHtml}
+        </select>
+        <button class="icon-btn" onclick="moveCategory(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.2"' : ''}>⬆️</button>
+        <button class="icon-btn" onclick="moveCategory(${index}, 1)" ${index === tempCategories.length - 1 ? 'disabled style="opacity:0.2"' : ''}>⬇️</button>
+        <button class="icon-btn" onclick="removeTempCategory(${index})">🗑️</button>
+      `;
+      container.appendChild(row);
+    });
+  }
+
+  function addNewCategoryField() {
+    tempCategories.push({
+      id: 'cat_' + Date.now(),
+      name: '新しいカテゴリ',
+      color: COLOR_OPTIONS[tempCategories.length % COLOR_OPTIONS.length].key
+    });
+    renderCatEditList();
+  }
+
+  function moveCategory(index, direction) {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= tempCategories.length) return;
+    const temp = tempCategories[index];
+    tempCategories[index] = tempCategories[targetIndex];
+    tempCategories[targetIndex] = temp;
+    renderCatEditList();
+  }
+
+  function removeTempCategory(index) {
+    if (tempCategories.length <= 1) {
+      alert("カテゴリは最低1つ必要です。");
+      return;
+    }
+    tempCategories.splice(index, 1);
+    renderCatEditList();
+  }
+
+  function saveCategories() {
+    const ws = getCurrentWorkspace();
+    ws.categories = JSON.parse(JSON.stringify(tempCategories));
+
+    const validIds = ws.categories.map(c => c.id);
+    const defaultCatId = ws.categories[0].id;
+
+    ws.tasks.forEach(task => {
+      if (!validIds.includes(task.categoryId)) {
+        task.categoryId = defaultCatId;
+      }
+    });
+
+    saveToStorage();
+    renderCategorySelect();
+    renderFilterTabs();
+    renderTasks();
+    closeModal('catModal');
+  }
+
+  /* =========================================================
+     バックアップ・インポート/エクスポート
+     ========================================================= */
+  function openDataModal() {
+    document.getElementById('jsonArea').value = JSON.stringify(appState, null, 2);
+    openModal('dataModal');
+  }
+
+  function copyDataText() {
+    const area = document.getElementById('jsonArea');
+    area.select();
+    document.execCommand('copy');
+    alert("バックアップデータをクリップボードにコピーしました！");
+  }
+
+  function importDataText() {
+    const text = document.getElementById('jsonArea').value.trim();
+    if (!text) return;
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed && parsed.workspaces) {
+        appState = parsed;
+        saveToStorage();
+        renderWorkspaceSelect();
+        renderCategorySelect();
+        renderFilterTabs();
+        renderTasks();
+        closeModal('dataModal');
+        alert("データを正常に復元・更新しました！");
+      } else {
+        alert("無効なデータ形式です。");
+      }
+    } catch(e) {
+      alert("JSONデータの解析に失敗しました。正しくコピーされているかご確認ください。");
+    }
+  }
+
+  /* =========================================================
+     ヘルパー関数
+     ========================================================= */
+  function openModal(id) {
+    document.getElementById(id).classList.add('active');
+  }
+
+  function closeModal(id) {
+    document.getElementById(id).classList.remove('active');
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  // アプリ起動
+  init();
+</script>
+</body>
+</html>
