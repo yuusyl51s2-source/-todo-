@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>やさしい淡色 ToDo - リマインダー通知付き</title>
+  <title>ToDo list</title>
 
   <!-- Google Fonts: M PLUS Rounded 1c -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,33 +15,30 @@
        カラーパレット & ベーススタイル（濃い茶色文字 & 淡色ベージュ）
        ========================================================= */
     :root {
-      /* メインベースカラー */
       --bg-main: #FAF8F5;          /* 全体背景: オフホワイト */
       --bg-card: #F2EBE1;          /* カード・枠背景: 薄ベージュ */
       --bg-card-sub: #E8DFD3;      /* 入力欄・サブカード背景: やや濃いめの薄ベージュ */
       
-      /* 濃い茶色のテキストカラー */
       --text-main: #3D312A;        /* メインテキスト: 濃いダークブラウン */
       --text-sub: #6B5B52;         /* サブテキスト・日付など: ブラウン */
       --text-muted: #8C7A70;       /* 補足・プレースホルダー: マイルドブラウン */
       --text-done: #9C8C83;        /* 完了線テキスト */
 
-      /* アクセント・ボタン色 */
       --btn-bg: #8C7A70;           /* プライマリボタン背景 */
       --btn-text: #FFFFFF;         /* ボタン内白文字 */
       --btn-hover: #736359;
       --border-color: #DDD4C8;     /* 淡いボーダーライン */
       --border-focus: #B5A499;
 
-      /* パステル・ペールトーンカラーセット（カテゴリ用） */
-      --cat-rose-bg: #F9ECEC; --cat-rose-border: #E8C8C8;
-      --cat-honey-bg: #FCF4E3; --cat-honey-border: #F0DAAD;
-      --cat-sage-bg: #EEF4EE; --cat-sage-border: #C6DBC6;
-      --cat-lavender-bg: #F3EEF8; --cat-lavender-border: #D8C8EA;
-      --cat-mint-bg: #E8F5F1; --cat-mint-border: #BCE2D7;
-      --cat-apricot-bg: #FAF0E6; --cat-apricot-border: #F2D0B6;
-      --cat-sky-bg: #EBF3F9; --cat-sky-border: #BCD6EA;
-      --cat-tea-bg: #F4EFEB; --cat-tea-border: #D3C5B8;
+      /* パステル・ペールトーンカラーセット */
+      --cat-rose-bg: #F9ECEC; --cat-rose-border: #E8C8C8; --cat-rose-text: #6B3D3D;
+      --cat-honey-bg: #FCF4E3; --cat-honey-border: #F0DAAD; --cat-honey-text: #6B5424;
+      --cat-sage-bg: #EEF4EE; --cat-sage-border: #C6DBC6; --cat-sage-text: #3D5A3D;
+      --cat-lavender-bg: #F3EEF8; --cat-lavender-border: #D8C8EA; --cat-lavender-text: #523D6B;
+      --cat-mint-bg: #E8F5F1; --cat-mint-border: #BCE2D7; --cat-mint-text: #2D5A4E;
+      --cat-apricot-bg: #FAF0E6; --cat-apricot-border: #F2D0B6; --cat-apricot-text: #6B422D;
+      --cat-sky-bg: #EBF3F9; --cat-sky-border: #BCD6EA; --cat-sky-text: #2D526B;
+      --cat-tea-bg: #F4EFEB; --cat-tea-border: #D3C5B8; --cat-tea-text: #5A4C44;
     }
 
     * {
@@ -57,7 +54,7 @@
       min-height: 100vh;
       display: flex;
       justify-content: center;
-      padding: 24px 16px;
+      padding: 16px 12px;
     }
 
     .app-container {
@@ -65,17 +62,38 @@
       max-width: 800px;
     }
 
+    /* 統一SVGアイコン用共通スタイル */
+    .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .icon svg {
+      width: 1.1rem;
+      height: 1.1rem;
+      fill: none;
+      stroke: var(--text-main);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .icon-sm svg { width: 0.85rem; height: 0.85rem; }
+    .icon-sub svg { stroke: var(--text-sub); }
+    .icon-white svg { stroke: #FFFFFF; }
+
     /* ---------------------------------------------------------
-       ヘッダー・ワークスペース（タスク表）切替領域
+       ヘッダー・ワークスペース切替領域 (超コンパクト化)
        --------------------------------------------------------- */
     header {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      margin-bottom: 24px;
+      gap: 10px;
+      margin-bottom: 16px;
       background: var(--bg-card);
-      padding: 20px;
-      border-radius: 20px;
+      padding: 12px 16px;
+      border-radius: 16px;
       border: 1px solid var(--border-color);
       box-shadow: 0 4px 15px rgba(61, 49, 42, 0.03);
     }
@@ -84,29 +102,27 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
+      gap: 8px;
     }
 
     .workspace-selector-wrapper {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      gap: 6px;
       flex: 1;
     }
 
     .workspace-select {
       background: #FFFFFF;
       border: 1.5px solid var(--border-color);
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 1.15rem;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 1rem;
       font-weight: 700;
       cursor: pointer;
       outline: none;
       transition: all 0.2s;
-      max-width: 280px;
+      max-width: 200px;
     }
 
     .workspace-select:focus {
@@ -115,20 +131,17 @@
 
     .header-actions {
       display: flex;
-      gap: 8px;
+      gap: 4px;
       align-items: center;
-      flex-wrap: wrap;
     }
 
-    /* ボタン共通パーツ */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 0.88rem;
+      padding: 6px 10px;
+      border-radius: 10px;
+      font-size: 0.85rem;
       font-weight: 700;
       cursor: pointer;
       border: 1px solid var(--border-color);
@@ -141,6 +154,12 @@
       background: var(--bg-card-sub);
     }
 
+    .btn-icon-only {
+      padding: 6px 8px;
+      min-width: 34px;
+      min-height: 34px;
+    }
+
     .btn-primary {
       background: var(--btn-bg);
       color: var(--btn-text) !important;
@@ -151,20 +170,9 @@
       background: var(--btn-hover);
     }
 
-    .btn-notify {
-      background: #FFF8E7;
-      border-color: #F0DAAD;
-    }
-
-    .btn-notify.active {
-      background: #EAF5EA;
-      border-color: #C6DBC6;
-      color: #386B38 !important;
-    }
-
     .btn-danger {
       background: #FDF2F2;
-      color: #C55A5A !important;
+      color: #903D3D !important;
       border-color: #F8D7D7;
     }
 
@@ -183,40 +191,31 @@
        --------------------------------------------------------- */
     .add-card {
       background: #FFFFFF;
-      padding: 20px;
-      border-radius: 20px;
+      padding: 14px 16px;
+      border-radius: 16px;
       border: 1px solid var(--border-color);
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       box-shadow: 0 4px 15px rgba(61, 49, 42, 0.02);
-    }
-
-    .add-card-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: var(--text-sub);
-      display: flex;
-      align-items: center;
-      gap: 6px;
     }
 
     .input-group {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 8px;
     }
 
     .input-row {
       display: flex;
-      gap: 10px;
+      gap: 6px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     input[type="text"], input[type="date"], select {
-      padding: 10px 14px;
+      padding: 7px 10px;
       border: 1.5px solid var(--border-color);
-      border-radius: 12px;
-      font-size: 0.92rem;
+      border-radius: 10px;
+      font-size: 0.88rem;
       background: var(--bg-main);
       outline: none;
       transition: border-color 0.2s;
@@ -231,36 +230,27 @@
       background: #FFFFFF;
     }
 
-    .input-title {
-      flex: 1;
-      min-width: 220px;
-    }
-
-    .input-cat, .input-date {
-      min-width: 150px;
-    }
-
-    .btn-add {
-      align-self: flex-end;
-      padding: 10px 20px;
-    }
+    .input-title { flex: 1; min-width: 180px; }
+    .input-cat { min-width: 130px; }
+    .input-date { min-width: 130px; }
+    .input-notify { min-width: 110px; }
 
     /* ---------------------------------------------------------
        フィルタータブ
        --------------------------------------------------------- */
     .filter-tabs {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       overflow-x: auto;
-      padding-bottom: 8px;
-      margin-bottom: 16px;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
       scrollbar-width: thin;
     }
 
     .filter-tab {
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 16px;
+      font-size: 0.78rem;
       font-weight: 700;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -276,49 +266,62 @@
     }
 
     /* ---------------------------------------------------------
-       タスクリスト表示
+       コンパクトタスクリスト表示
        --------------------------------------------------------- */
     .task-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 6px;
     }
 
     .task-item {
       background: #FFFFFF;
       border: 1px solid var(--border-color);
-      border-radius: 16px;
-      padding: 14px 16px;
+      border-radius: 12px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
-      gap: 12px;
-      box-shadow: 0 2px 8px rgba(61, 49, 42, 0.02);
+      gap: 10px;
+      box-shadow: 0 2px 6px rgba(61, 49, 42, 0.02);
       transition: transform 0.15s, box-shadow 0.15s;
     }
 
     .task-item:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(61, 49, 42, 0.05);
+      box-shadow: 0 4px 10px rgba(61, 49, 42, 0.04);
     }
 
     .task-checkbox {
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       accent-color: var(--btn-bg);
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .task-content {
       flex: 1;
       display: flex;
-      flex-direction: column;
-      gap: 4px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .task-main-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
     }
 
     .task-title {
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: 500;
-      word-break: break-all;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .task-item.completed .task-title {
@@ -326,73 +329,83 @@
       color: var(--text-done);
     }
 
-    .task-meta {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .cat-badge {
+    .cat-badge-mini {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
-      padding: 3px 10px;
-      border-radius: 12px;
-      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.68rem;
       font-weight: 700;
+      white-space: nowrap;
+      flex-shrink: 0;
       border: 1px solid transparent;
     }
 
+    .task-sub-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
     .date-badge {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--text-sub);
       display: flex;
       align-items: center;
       gap: 4px;
+      white-space: nowrap;
     }
 
     .date-badge.urgent {
-      color: #B24242;
+      color: #903D3D;
       font-weight: 700;
+    }
+
+    .date-badge.urgent svg { stroke: #903D3D; }
+
+    .notify-badge {
+      display: flex;
+      align-items: center;
+      padding: 2px 5px;
+      border-radius: 6px;
+      background: var(--bg-main);
+      border: 1px solid var(--border-color);
     }
 
     .task-item-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
-    }
-
-    .cat-select-mini {
-      padding: 4px 8px;
-      font-size: 0.8rem;
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-      background: var(--bg-main);
-      cursor: pointer;
+      gap: 2px;
+      flex-shrink: 0;
     }
 
     .icon-btn {
       background: none;
       border: none;
       cursor: pointer;
-      font-size: 1rem;
-      opacity: 0.6;
-      transition: opacity 0.2s;
       padding: 4px;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.75;
+      transition: opacity 0.2s, background 0.2s;
     }
 
     .icon-btn:hover {
       opacity: 1;
+      background: var(--bg-main);
     }
 
     .empty-state {
       text-align: center;
-      padding: 40px 20px;
+      padding: 30px 20px;
       color: var(--text-muted);
       background: var(--bg-card);
       border-radius: 16px;
       border: 1px dashed var(--border-color);
+      font-size: 0.88rem;
     }
 
     /* ---------------------------------------------------------
@@ -422,7 +435,7 @@
       border-radius: 20px;
       width: 100%;
       max-width: 520px;
-      padding: 24px;
+      padding: 20px 24px;
       box-shadow: 0 10px 30px rgba(61, 49, 42, 0.15);
       max-height: 85vh;
       display: flex;
@@ -433,14 +446,17 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border-color);
     }
 
     .modal-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .modal-body {
@@ -449,70 +465,110 @@
       padding-right: 4px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-sub);
     }
 
     .cat-edit-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .cat-edit-item {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: var(--bg-main);
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 12px;
       border: 1px solid var(--border-color);
     }
 
     .cat-edit-item input[type="text"] {
       flex: 1;
-      padding: 6px 10px;
+      padding: 4px 8px;
       background: #FFFFFF;
     }
 
-    .color-picker-select {
-      padding: 6px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-    }
-
-    /* カラーテーマクラス */
-    .cat-color-rose { background-color: var(--cat-rose-bg); border-color: var(--cat-rose-border); }
-    .cat-color-honey { background-color: var(--cat-honey-bg); border-color: var(--cat-honey-border); }
-    .cat-color-sage { background-color: var(--cat-sage-bg); border-color: var(--cat-sage-border); }
-    .cat-color-lavender { background-color: var(--cat-lavender-bg); border-color: var(--cat-lavender-border); }
-    .cat-color-mint { background-color: var(--cat-mint-bg); border-color: var(--cat-mint-border); }
-    .cat-color-apricot { background-color: var(--cat-apricot-bg); border-color: var(--cat-apricot-border); }
-    .cat-color-sky { background-color: var(--cat-sky-bg); border-color: var(--cat-sky-border); }
-    .cat-color-tea { background-color: var(--cat-tea-bg); border-color: var(--cat-tea-border); }
+    /* カラーテーマ定義 */
+    .cat-color-rose { background-color: var(--cat-rose-bg); border-color: var(--cat-rose-border); color: var(--cat-rose-text); }
+    .cat-color-honey { background-color: var(--cat-honey-bg); border-color: var(--cat-honey-border); color: var(--cat-honey-text); }
+    .cat-color-sage { background-color: var(--cat-sage-bg); border-color: var(--cat-sage-border); color: var(--cat-sage-text); }
+    .cat-color-lavender { background-color: var(--cat-lavender-bg); border-color: var(--cat-lavender-border); color: var(--cat-lavender-text); }
+    .cat-color-mint { background-color: var(--cat-mint-bg); border-color: var(--cat-mint-border); color: var(--cat-mint-text); }
+    .cat-color-apricot { background-color: var(--cat-apricot-bg); border-color: var(--cat-apricot-border); color: var(--cat-apricot-text); }
+    .cat-color-sky { background-color: var(--cat-sky-bg); border-color: var(--cat-sky-border); color: var(--cat-sky-text); }
+    .cat-color-tea { background-color: var(--cat-tea-bg); border-color: var(--cat-tea-border); color: var(--cat-tea-text); }
 
     textarea.json-textarea {
       width: 100%;
-      height: 140px;
+      height: 130px;
       border: 1.5px solid var(--border-color);
       border-radius: 12px;
       padding: 10px;
       font-family: monospace;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       background: var(--bg-main);
       resize: vertical;
     }
 
+    .trash-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-main);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
+      font-size: 0.85rem;
+    }
+
+    .trash-meta {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
     @media (max-width: 600px) {
-      body { padding: 12px 8px; }
-      .top-bar { flex-direction: column; align-items: stretch; }
-      .workspace-select { max-width: 100%; }
-      .header-actions { justify-content: flex-end; }
-      .input-row { flex-direction: column; }
-      .btn-add { width: 100%; }
+      body { padding: 10px 6px; }
+      .workspace-select { max-width: 150px; }
+      .input-row { flex-direction: column; align-items: stretch; }
+      .task-content { flex-direction: column; align-items: flex-start; gap: 4px; }
+      .task-sub-info { width: 100%; justify-content: space-between; }
     }
   </style>
 </head>
 <body>
+
+<!-- SVG アイコン定義（濃い茶色一色） -->
+<svg style="display: none;">
+  <symbol id="icon-plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></symbol>
+  <symbol id="icon-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></symbol>
+  <symbol id="icon-trash" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></symbol>
+  <symbol id="icon-tag" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></symbol>
+  <symbol id="icon-refresh" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></symbol>
+  <symbol id="icon-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></symbol>
+  <symbol id="icon-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></symbol>
+  <symbol id="icon-bell" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></symbol>
+  <symbol id="icon-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></symbol>
+  <symbol id="icon-close" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></symbol>
+  <symbol id="icon-arrow-up" viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></symbol>
+  <symbol id="icon-arrow-down" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></symbol>
+</svg>
+
+<!-- 過去のタスク名の入力サジェスト（予測変換リスト） -->
+<datalist id="taskTitleHistoryList"></datalist>
 
 <div class="app-container">
   <!-- ヘッダー＆タスク表切替領域 -->
@@ -522,29 +578,46 @@
         <select id="workspaceSelect" class="workspace-select" onchange="switchWorkspace(this.value)">
           <!-- 動的生成 -->
         </select>
-        <button class="btn btn-sm" onclick="promptCreateWorkspace()" title="新しいタスク管理表を作成">＋ 新規作成</button>
-        <button class="btn btn-sm" onclick="openWorkspaceManageModal()" title="現在のタスク表を管理">⚙ 管理</button>
+        <button class="btn btn-icon-only" onclick="promptCreateWorkspace()" title="新規タスク表を作成">
+          <span class="icon"><svg><use href="#icon-plus"/></svg></span>
+        </button>
+        <button class="btn btn-icon-only" onclick="openWorkspaceManageModal()" title="タスク表の設定・管理">
+          <span class="icon"><svg><use href="#icon-settings"/></svg></span>
+        </button>
       </div>
 
       <div class="header-actions">
-        <button id="notifyBtn" class="btn btn-sm btn-notify" onclick="requestNotificationPermission()">🔔 通知を許可</button>
-        <button class="btn btn-sm" onclick="openCatManageModal()">🏷️ カテゴリ編集</button>
-        <button class="btn btn-sm" onclick="openDataModal()">🔄 バックアップ</button>
+        <button class="btn btn-icon-only" onclick="openTrashModal()" title="ゴミ箱（削除から1週間以内の復元）">
+          <span class="icon"><svg><use href="#icon-trash"/></svg></span>
+        </button>
+        <button class="btn btn-icon-only" onclick="openCatManageModal()" title="カテゴリの編集・管理">
+          <span class="icon"><svg><use href="#icon-tag"/></svg></span>
+        </button>
+        <button class="btn btn-icon-only" onclick="openDataModal()" title="データバックアップ・復元">
+          <span class="icon"><svg><use href="#icon-refresh"/></svg></span>
+        </button>
       </div>
     </div>
   </header>
 
-  <!-- タスク追加カード -->
+  <!-- タスク入力カード -->
   <div class="add-card">
-    <div class="add-card-title">✨ 新しいタスクを追加</div>
     <div class="input-group">
       <div class="input-row">
-        <input type="text" id="taskTitle" class="input-title" placeholder="やることを入力してください..." onkeydown="if(event.key==='Enter') addTask()">
+        <!-- datalist連携による過去タスク名の自動予測変換機能 -->
+        <input type="text" id="taskTitle" class="input-title" list="taskTitleHistoryList" placeholder="やることを入力（過去の入力候補がでます）..." onkeydown="if(event.key==='Enter') addTask()">
       </div>
       <div class="input-row">
         <select id="taskCategory" class="input-cat"></select>
-        <input type="date" id="taskDueDate" class="input-date">
-        <button class="btn btn-primary btn-add" onclick="addTask()">追加する</button>
+        <input type="date" id="taskDueDate" class="input-date" title="期限日">
+        <!-- 通知あり / なし のシンプル選択 -->
+        <select id="taskNotifyEnable" class="input-notify" title="通知のオン/オフ">
+          <option value="true">🔔 通知あり</option>
+          <option value="false">🔕 通知なし</option>
+        </select>
+        <button class="btn btn-primary btn-icon-only" style="padding: 7px 14px;" onclick="addTask()" title="タスクを追加">
+          <span class="icon icon-white"><svg><use href="#icon-plus"/></svg></span>
+        </button>
       </div>
     </div>
   </div>
@@ -560,12 +633,72 @@
   </div>
 </div>
 
+<!-- モーダル：タスク編集 -->
+<div class="modal-overlay" id="editTaskModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="icon"><svg><use href="#icon-edit"/></svg></span> タスクの編集
+      </div>
+      <button class="icon-btn" onclick="closeModal('editTaskModal')">
+        <span class="icon"><svg><use href="#icon-close"/></svg></span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editTaskId">
+      <div class="form-group">
+        <label>タスク名</label>
+        <input type="text" id="editTaskTitle" list="taskTitleHistoryList" placeholder="タスク名を入力">
+      </div>
+      <div class="form-group">
+        <label>カテゴリ</label>
+        <select id="editTaskCategory"></select>
+      </div>
+      <div class="form-group">
+        <label>期限日</label>
+        <input type="date" id="editTaskDueDate">
+      </div>
+      <div class="form-group">
+        <label>通知設定</label>
+        <select id="editTaskNotifyEnable">
+          <option value="true">🔔 通知あり（3日前19時＆当日朝5時）</option>
+          <option value="false">🔕 通知なし</option>
+        </select>
+      </div>
+    </div>
+    <div style="margin-top: 16px; text-align: right;">
+      <button class="btn btn-primary" onclick="saveTaskEdit()">変更を保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- モーダル：ゴミ箱 -->
+<div class="modal-overlay" id="trashModal">
+  <div class="modal-card">
+    <div class="modal-header">
+      <div class="modal-title">
+        <span class="icon"><svg><use href="#icon-trash"/></svg></span> ゴミ箱（1週間以内の削除タスク）
+      </div>
+      <button class="icon-btn" onclick="closeModal('trashModal')">
+        <span class="icon"><svg><use href="#icon-close"/></svg></span>
+      </button>
+    </div>
+    <div class="modal-body" id="trashList">
+      <!-- 動的生成 -->
+    </div>
+  </div>
+</div>
+
 <!-- モーダル：カテゴリ管理 -->
 <div class="modal-overlay" id="catModal">
   <div class="modal-card">
     <div class="modal-header">
-      <div class="modal-title">🏷️ カテゴリの編集・追加</div>
-      <button class="icon-btn" onclick="closeModal('catModal')">✖</button>
+      <div class="modal-title">
+        <span class="icon"><svg><use href="#icon-tag"/></svg></span> カテゴリの編集・追加
+      </div>
+      <button class="icon-btn" onclick="closeModal('catModal')">
+        <span class="icon"><svg><use href="#icon-close"/></svg></span>
+      </button>
     </div>
     <div class="modal-body">
       <div class="cat-edit-list" id="catEditList">
@@ -579,22 +712,26 @@
   </div>
 </div>
 
-<!-- モーダル：タスク表（ワークスペース）管理 -->
+<!-- モーダル：ワークスペース管理 -->
 <div class="modal-overlay" id="wsModal">
   <div class="modal-card">
     <div class="modal-header">
-      <div class="modal-title">⚙ タスク管理表の設定</div>
-      <button class="icon-btn" onclick="closeModal('wsModal')">✖</button>
+      <div class="modal-title">
+        <span class="icon"><svg><use href="#icon-settings"/></svg></span> タスク管理表の設定
+      </div>
+      <button class="icon-btn" onclick="closeModal('wsModal')">
+        <span class="icon"><svg><use href="#icon-close"/></svg></span>
+      </button>
     </div>
     <div class="modal-body">
-      <div style="display: flex; flex-direction: column; gap: 12px;">
-        <label style="font-size: 0.9rem; font-weight: 700;">タスク表の名前:</label>
+      <div class="form-group">
+        <label>タスク表の名前:</label>
         <input type="text" id="wsNameInput" placeholder="例: プライベート、仕事、旅行準備">
       </div>
-      <hr style="border: none; border-top: 1px solid var(--border-color); margin: 12px 0;">
+      <hr style="border: none; border-top: 1px solid var(--border-color); margin: 8px 0;">
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <span style="font-size: 0.85rem; color: var(--text-sub);">このタスク表を削除する:</span>
-        <button class="btn btn-danger btn-sm" onclick="deleteCurrentWorkspace()">タスク表を削除</button>
+        <span style="font-size: 0.85rem; color: var(--text-sub);">このタスク表を削除:</span>
+        <button class="btn btn-danger btn-sm" onclick="deleteCurrentWorkspace()">削除する</button>
       </div>
     </div>
     <div style="margin-top: 16px; text-align: right;">
@@ -607,62 +744,61 @@
 <div class="modal-overlay" id="dataModal">
   <div class="modal-card">
     <div class="modal-header">
-      <div class="modal-title">🔄 データの出力・取り込み</div>
-      <button class="icon-btn" onclick="closeModal('dataModal')">✖</button>
+      <div class="modal-title">
+        <span class="icon"><svg><use href="#icon-refresh"/></svg></span> データの出力・取り込み
+      </div>
+      <button class="icon-btn" onclick="closeModal('dataModal')">
+        <span class="icon"><svg><use href="#icon-close"/></svg></span>
+      </button>
     </div>
     <div class="modal-body">
-      <p style="font-size: 0.85rem; color: var(--text-sub);">
-        すべてのタスク表とデータのバックアップ・復元を行えます。コピーして別の端末（スマホやPC）に貼り付けることができます。
+      <p style="font-size: 0.82rem; color: var(--text-sub);">
+        すべてのタスク表・入力履歴・ゴミ箱データのバックアップ・復元を行えます。
       </p>
       <textarea id="jsonArea" class="json-textarea" placeholder="ここにバックアップデータを貼り付け..."></textarea>
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button class="btn" onclick="copyDataText()">📋 データをコピー</button>
-        <button class="btn btn-primary" onclick="importDataText()">📥 データを復元・読み込み</button>
+        <button class="btn" onclick="copyDataText()">📋 コピー</button>
+        <button class="btn btn-primary" onclick="importDataText()">📥 復元・読み込み</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-  /* =========================================================
-     カラーマスター＆デフォルト初期値設定
-     ========================================================= */
+  /* カラー定義 */
   const COLOR_OPTIONS = [
-    { key: 'rose', name: 'ダスティローズ', class: 'cat-color-rose' },
-    { key: 'honey', name: 'ハニーイエロー', class: 'cat-color-honey' },
-    { key: 'sage', name: 'セージグリーン', class: 'cat-color-sage' },
-    { key: 'lavender', name: 'ソフトラベンダー', class: 'cat-color-lavender' },
-    { key: 'mint', name: 'ペパーミント', class: 'cat-color-mint' },
-    { key: 'apricot', name: 'アプリコット', class: 'cat-color-apricot' },
-    { key: 'sky', name: 'スカイブルー', class: 'cat-color-sky' },
-    { key: 'tea', name: 'ミルクティー', class: 'cat-color-tea' }
+    { key: 'rose', name: '🩷pink', class: 'cat-color-rose' },
+    { key: 'honey', name: '💛yellow', class: 'cat-color-honey' },
+    { key: 'sage', name: '💚green', class: 'cat-color-sage' },
+    { key: 'lavender', name: '💜purple', class: 'cat-color-lavender' },
+    { key: 'apricot', name: '🧡orange', class: 'cat-color-apricot' },
+    { key: 'sky', name: '💙blue', class: 'cat-color-sky' },
+    { key: 'tea', name: '🤎brown', class: 'cat-color-tea' }
   ];
 
   const DEFAULT_CATEGORIES = [
-    { id: 'cat_1', name: '🔴 今すぐ・1週間以内', color: 'rose' },
-    { id: 'cat_2', name: '🟡 2週間〜1ヶ月以内', color: 'honey' },
-    { id: 'cat_3', name: '🔵 半年以内', color: 'sage' },
-    { id: 'cat_4', name: '🟣 期限なし・暇な時', color: 'lavender' }
+    { id: 'cat_1', name: '今すぐ・1週間', color: 'rose' },
+    { id: 'cat_2', name: '2週間〜1ヶ月', color: 'honey' },
+    { id: 'cat_3', name: '半年以内', color: 'sage' },
+    { id: 'cat_4', name: '期限なし', color: 'lavender' }
   ];
 
-  const STORAGE_KEY = 'pastel_multi_todo_app_data_v1';
-  const NOTIFIED_KEY = 'pastel_todo_notified_tasks_v1';
+  const STORAGE_KEY = 'pastel_multi_todo_app_data_v5';
 
-  /* =========================================================
-     アプリケーション状態（State）
-     ========================================================= */
+  /* アプリ状態 */
   let appState = {
     currentWorkspaceId: 'default_ws',
+    trash: [],
+    historyTitles: ['部屋の掃除・片付け', '書類の整理と提出', '資格試験の勉強'], // 過去タスク履歴
     workspaces: {
       'default_ws': {
         id: 'default_ws',
         name: 'メインのタスク表',
         categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
         tasks: [
-          { id: '1', title: '部屋の掃除・片付け', categoryId: 'cat_1', dueDate: getRelativeDateStr(2), completed: false },
-          { id: '2', title: '書類の整理と提出', categoryId: 'cat_2', dueDate: getRelativeDateStr(14), completed: false },
-          { id: '3', title: '資格試験の勉強・計画', categoryId: 'cat_3', dueDate: getRelativeDateStr(90), completed: false },
-          { id: '4', title: '読みたい本リストの作成', categoryId: 'cat_4', dueDate: '', completed: false }
+          { id: '1', title: '部屋の掃除・片付け', categoryId: 'cat_1', dueDate: getRelativeDateStr(2), notifyEnable: true, completed: false },
+          { id: '2', title: '書類の整理と提出', categoryId: 'cat_2', dueDate: getRelativeDateStr(14), notifyEnable: true, completed: false },
+          { id: '3', title: '資格試験の勉強', categoryId: 'cat_3', dueDate: getRelativeDateStr(90), notifyEnable: false, completed: false }
         ]
       }
     }
@@ -676,20 +812,16 @@
     return d.toISOString().split('T')[0];
   }
 
-  /* =========================================================
-     初期化・LocalStorage読み書き
-     ========================================================= */
   function init() {
     loadFromStorage();
+    cleanOldTrash();
+    requestNotificationPermission();
     renderWorkspaceSelect();
     renderCategorySelect();
     renderFilterTabs();
+    renderHistoryDatalist();
     renderTasks();
-    updateNotifyButtonUI();
-
-    // 通知の自動監視開始（起動時＋1時間ごと）
-    checkDueTasksForNotification();
-    setInterval(checkDueTasksForNotification, 3600000);
+    setInterval(checkNotifications, 30000); // 30秒周期判定
   }
 
   function saveToStorage() {
@@ -703,130 +835,52 @@
         const parsed = JSON.parse(data);
         if (parsed && parsed.workspaces) {
           appState = parsed;
+          if (!appState.trash) appState.trash = [];
+          if (!appState.historyTitles) appState.historyTitles = [];
         }
-      } catch(e) {
-        console.error("Storage load failed:", e);
-      }
+      } catch(e) { console.error(e); }
     }
   }
 
   function getCurrentWorkspace() {
     if (!appState.workspaces[appState.currentWorkspaceId]) {
-      const keys = Object.keys(appState.workspaces);
-      if (keys.length > 0) {
-        appState.currentWorkspaceId = keys[0];
-      } else {
-        appState.workspaces['default_ws'] = {
-          id: 'default_ws',
-          name: 'メインのタスク表',
-          categories: JSON.parse(JSON.stringify(DEFAULT_CATEGORIES)),
-          tasks: []
-        };
-        appState.currentWorkspaceId = 'default_ws';
-      }
+      appState.currentWorkspaceId = Object.keys(appState.workspaces)[0] || 'default_ws';
     }
     return appState.workspaces[appState.currentWorkspaceId];
   }
 
-  /* =========================================================
-     通知（Notification）管理機能
-     ========================================================= */
-  function requestNotificationPermission() {
-    if (!("Notification" in window)) {
-      alert("お使いのブラウザは通知機能をサポートしていません。");
-      return;
-    }
-
-    Notification.requestPermission().then(permission => {
-      updateNotifyButtonUI();
-      if (permission === "granted") {
-        new Notification("🌸 通知が許可されました", {
-          body: "タスクの期限が3日前になると、ここでお知らせします！",
-          icon: "https://fav.farm/🌸"
-        });
-        checkDueTasksForNotification();
-      } else if (permission === "denied") {
-        alert("ブラウザの設定で通知がブロックされています。ブラウザの設定から許可に変更してください。");
-      }
-    });
-  }
-
-  function updateNotifyButtonUI() {
-    const btn = document.getElementById('notifyBtn');
-    if (!("Notification" in window)) {
-      btn.style.display = 'none';
-      return;
-    }
-
-    if (Notification.permission === "granted") {
-      btn.textContent = "🔔 通知オン";
-      btn.classList.add("active");
-    } else {
-      btn.textContent = "🔔 通知を許可";
-      btn.classList.remove("active");
-    }
-  }
-
-  /* 期限3日前の判定・通知発行ロジック */
-  function checkDueTasksForNotification() {
-    if (!("Notification" in window) || Notification.permission !== "granted") return;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    let notifiedMap = {};
-    try {
-      notifiedMap = JSON.parse(localStorage.getItem(NOTIFIED_KEY) || '{}');
-    } catch(e) {}
-
-    // 全てのタスク表をスキャン
-    Object.values(appState.workspaces).forEach(ws => {
-      ws.tasks.forEach(task => {
-        if (task.completed || !task.dueDate) return;
-
-        const dueDate = new Date(task.dueDate + 'T00:00:00');
-        const diffTime = dueDate.getTime() - today.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-        // 期限まで3日以内（3日, 2日, 1日, 当日, またはすでに期限超過）
-        if (diffDays <= 3) {
-          const notifyKey = `${task.id}_${task.dueDate}_${diffDays <= 0 ? 'due' : diffDays}`;
-
-          if (!notifiedMap[notifyKey]) {
-            let message = '';
-            if (diffDays < 0) {
-              message = `【期限超過】「${task.title}」の期限が過ぎています！`;
-            } else if (diffDays === 0) {
-              message = `【本日が期限】「${task.title}」は今日が期限です！`;
-            } else {
-              message = `【あと${diffDays}日】「${task.title}」の期限が近づいています（${task.dueDate}）`;
-            }
-
-            new Notification(`⏰ タスクリマインダー (${ws.name})`, {
-              body: message,
-              icon: "https://fav.farm/⏰"
-            });
-
-            notifiedMap[notifyKey] = true;
-          }
-        }
+  /* 過去のタスク名予測変換（datalist）の更新 */
+  function renderHistoryDatalist() {
+    const dl = document.getElementById('taskTitleHistoryList');
+    dl.innerHTML = '';
+    if (appState.historyTitles) {
+      appState.historyTitles.forEach(title => {
+        const opt = document.createElement('option');
+        opt.value = title;
+        dl.appendChild(opt);
       });
-    });
-
-    localStorage.setItem(NOTIFIED_KEY, JSON.stringify(notifiedMap));
+    }
   }
 
-  /* =========================================================
-     ワークスペース（タスク表）操作
-     ========================================================= */
+  function addTitleToHistory(title) {
+    if (!title) return;
+    if (!appState.historyTitles) appState.historyTitles = [];
+    // 重複を避けて先頭に追加
+    appState.historyTitles = appState.historyTitles.filter(t => t !== title);
+    appState.historyTitles.unshift(title);
+    // 最大50件保持
+    if (appState.historyTitles.length > 50) appState.historyTitles.pop();
+    renderHistoryDatalist();
+  }
+
+  /* ワークスペース操作 */
   function renderWorkspaceSelect() {
     const select = document.getElementById('workspaceSelect');
     select.innerHTML = '';
-
     Object.values(appState.workspaces).forEach(ws => {
       const opt = document.createElement('option');
       opt.value = ws.id;
-      opt.textContent = `📋 ${ws.name}`;
+      opt.textContent = ws.name;
       if (ws.id === appState.currentWorkspaceId) opt.selected = true;
       select.appendChild(opt);
     });
@@ -844,7 +898,7 @@
   }
 
   function promptCreateWorkspace() {
-    const name = prompt("新しいタスク管理表の名前を入力してください:\n(例: 仕事用、プライベート、イベント準備)", "新しいタスク表");
+    const name = prompt("新しいタスク管理表の名前を入力してください:", "新しいタスク表");
     if (name && name.trim()) {
       const newId = 'ws_' + Date.now();
       appState.workspaces[newId] = {
@@ -864,8 +918,7 @@
   }
 
   function openWorkspaceManageModal() {
-    const ws = getCurrentWorkspace();
-    document.getElementById('wsNameInput').value = ws.name;
+    document.getElementById('wsNameInput').value = getCurrentWorkspace().name;
     openModal('wsModal');
   }
 
@@ -881,13 +934,12 @@
   }
 
   function deleteCurrentWorkspace() {
-    const keys = Object.keys(appState.workspaces);
-    if (keys.length <= 1) {
-      alert("これ以上タスク表を削除することはできません。（最低1つのタスク表が必要です）");
+    if (Object.keys(appState.workspaces).length <= 1) {
+      alert("これ以上タスク表を削除できません。");
       return;
     }
     const ws = getCurrentWorkspace();
-    if (confirm(`タスク表「${ws.name}」を削除してもよろしいですか？\n※ 含まれるすべてのタスクも削除されます。`)) {
+    if (confirm(`タスク表「${ws.name}」を削除してもよろしいですか？`)) {
       delete appState.workspaces[ws.id];
       appState.currentWorkspaceId = Object.keys(appState.workspaces)[0];
       saveToStorage();
@@ -899,9 +951,7 @@
     }
   }
 
-  /* =========================================================
-     UI レンダリング（カテゴリ・フィルター・タスク）
-     ========================================================= */
+  /* カテゴリ＆フィルター */
   function renderCategorySelect() {
     const ws = getCurrentWorkspace();
     const select = document.getElementById('taskCategory');
@@ -941,19 +991,18 @@
     renderTasks();
   }
 
+  /* 期限昇順ソート */
   function sortTasksByDueDate(tasks) {
     return tasks.slice().sort((a, b) => {
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
-      if (!a.dueDate && !b.dueDate) return a.id - b.id;
+      if (!a.dueDate && !b.dueDate) return 0;
       if (!a.dueDate) return 1;
       if (!b.dueDate) return -1;
-      if (a.dueDate !== b.dueDate) {
-        return a.dueDate.localeCompare(b.dueDate);
-      }
-      return a.id - b.id;
+      return a.dueDate.localeCompare(b.dueDate);
     });
   }
 
+  /* タスク一覧表示 */
   function renderTasks() {
     const ws = getCurrentWorkspace();
     const listEl = document.getElementById('taskList');
@@ -965,7 +1014,7 @@
     }
 
     if (filtered.length === 0) {
-      listEl.innerHTML = `<div class="empty-state">🌸 タスクはありません</div>`;
+      listEl.innerHTML = `<div class="empty-state">タスクはありません</div>`;
       return;
     }
 
@@ -976,36 +1025,50 @@
       const cat = ws.categories.find(c => c.id === task.categoryId) || { name: '未分類', color: 'tea' };
       const colorObj = COLOR_OPTIONS.find(c => c.key === cat.color) || COLOR_OPTIONS[0];
 
+      const item = document.createElement('div');
+      item.className = `task-item ${task.completed ? 'completed' : ''}`;
+
       let dateHtml = '';
       if (task.dueDate) {
         const isUrgent = !task.completed && task.dueDate <= todayStr;
         dateHtml = `
           <span class="date-badge ${isUrgent ? 'urgent' : ''}">
-            📅 ${task.dueDate} ${isUrgent ? '⚠️' : ''}
+            <span class="icon icon-sm icon-sub"><svg><use href="#icon-calendar"/></svg></span>
+            ${task.dueDate}
+            ${isUrgent ? '<span class="icon icon-sm"><svg><use href="#icon-alert"/></svg></span>' : ''}
           </span>
         `;
       }
 
-      let catOptionsHtml = ws.categories.map(c => `
-        <option value="${c.id}" ${c.id === task.categoryId ? 'selected' : ''}>${c.name}</option>
-      `).join('');
+      // 通知ありのタスクにベルマーク表示
+      let notifyHtml = '';
+      if (task.dueDate && (task.notifyEnable === undefined || task.notifyEnable === true || task.notifyEnable === 'true')) {
+        notifyHtml = `
+          <span class="notify-badge" title="期限当日の朝5時・3日前夜19時に自動通知">
+            <span class="icon icon-sm icon-sub"><svg><use href="#icon-bell"/></svg></span>
+          </span>
+        `;
+      }
 
-      const item = document.createElement('div');
-      item.className = `task-item ${task.completed ? 'completed' : ''}`;
       item.innerHTML = `
         <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask('${task.id}')">
         <div class="task-content">
-          <div class="task-title">${escapeHtml(task.title)}</div>
-          <div class="task-meta">
-            <span class="cat-badge ${colorObj.class}">${cat.name}</span>
+          <div class="task-main-info">
+            <span class="cat-badge-mini ${colorObj.class}">${cat.name}</span>
+            <span class="task-title" title="${escapeHtml(task.title)}">${escapeHtml(task.title)}</span>
+          </div>
+          <div class="task-sub-info">
             ${dateHtml}
+            ${notifyHtml}
           </div>
         </div>
         <div class="task-item-actions">
-          <select class="cat-select-mini" onchange="changeTaskCategory('${task.id}', this.value)">
-            ${catOptionsHtml}
-          </select>
-          <button class="icon-btn" onclick="deleteTask('${task.id}')" title="削除">🗑️</button>
+          <button class="icon-btn" onclick="openEditTaskModal('${task.id}')" title="編集">
+            <span class="icon icon-sm"><svg><use href="#icon-edit"/></svg></span>
+          </button>
+          <button class="icon-btn" onclick="deleteTask('${task.id}')" title="ゴミ箱へ移動">
+            <span class="icon icon-sm"><svg><use href="#icon-trash"/></svg></span>
+          </button>
         </div>
       `;
 
@@ -1013,23 +1076,26 @@
     });
   }
 
-  /* =========================================================
-     タスクの追加・編集・削除
-     ========================================================= */
+  /* タスク追加・履歴記憶 */
   function addTask() {
     const ws = getCurrentWorkspace();
     const titleInput = document.getElementById('taskTitle');
     const catSelect = document.getElementById('taskCategory');
     const dateInput = document.getElementById('taskDueDate');
+    const notifySelect = document.getElementById('taskNotifyEnable');
 
     const title = titleInput.value.trim();
     if (!title) return;
+
+    // 入力履歴にタスク名を記憶保存
+    addTitleToHistory(title);
 
     const newTask = {
       id: String(Date.now()),
       title: title,
       categoryId: catSelect.value || (ws.categories[0] ? ws.categories[0].id : ''),
       dueDate: dateInput.value,
+      notifyEnable: notifySelect.value === 'true',
       completed: false
     };
 
@@ -1041,7 +1107,6 @@
 
     renderFilterTabs();
     renderTasks();
-    checkDueTasksForNotification();
   }
 
   function toggleTask(id) {
@@ -1054,28 +1119,151 @@
     }
   }
 
-  function changeTaskCategory(taskId, newCatId) {
+  function deleteTask(id) {
     const ws = getCurrentWorkspace();
-    const task = ws.tasks.find(t => t.id === taskId);
-    if (task) {
-      task.categoryId = newCatId;
+    const taskIndex = ws.tasks.findIndex(t => t.id === id);
+    if (taskIndex !== -1) {
+      const [deletedTask] = ws.tasks.splice(taskIndex, 1);
+      appState.trash.push({
+        task: deletedTask,
+        workspaceId: ws.id,
+        deletedAt: Date.now()
+      });
       saveToStorage();
       renderFilterTabs();
       renderTasks();
     }
   }
 
-  function deleteTask(id) {
+  /* タスク修正モーダル */
+  function openEditTaskModal(id) {
     const ws = getCurrentWorkspace();
-    ws.tasks = ws.tasks.filter(t => t.id !== id);
-    saveToStorage();
-    renderFilterTabs();
-    renderTasks();
+    const task = ws.tasks.find(t => t.id === id);
+    if (!task) return;
+
+    document.getElementById('editTaskId').value = task.id;
+    document.getElementById('editTaskTitle').value = task.title;
+    document.getElementById('editTaskDueDate').value = task.dueDate || '';
+    document.getElementById('editTaskNotifyEnable').value = (task.notifyEnable !== false && task.notifyEnable !== 'false') ? 'true' : 'false';
+
+    const catSelect = document.getElementById('editTaskCategory');
+    catSelect.innerHTML = '';
+    ws.categories.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = c.name;
+      if (c.id === task.categoryId) opt.selected = true;
+      catSelect.appendChild(opt);
+    });
+
+    openModal('editTaskModal');
   }
 
-  /* =========================================================
-     カテゴリ編集モーダルの処理
-     ========================================================= */
+  function saveTaskEdit() {
+    const ws = getCurrentWorkspace();
+    const id = document.getElementById('editTaskId').value;
+    const task = ws.tasks.find(t => t.id === id);
+
+    if (task) {
+      const title = document.getElementById('editTaskTitle').value.trim();
+      if (!title) return;
+
+      addTitleToHistory(title);
+
+      task.title = title;
+      task.categoryId = document.getElementById('editTaskCategory').value;
+      task.dueDate = document.getElementById('editTaskDueDate').value;
+      task.notifyEnable = document.getElementById('editTaskNotifyEnable').value === 'true';
+
+      saveToStorage();
+      renderFilterTabs();
+      renderTasks();
+      closeModal('editTaskModal');
+    }
+  }
+
+  /* ゴミ箱 */
+  function cleanOldTrash() {
+    const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+    appState.trash = appState.trash.filter(item => (now - item.deletedAt) < SEVEN_DAYS_MS);
+    saveToStorage();
+  }
+
+  function openTrashModal() {
+    cleanOldTrash();
+    const container = document.getElementById('trashList');
+    container.innerHTML = '';
+
+    if (appState.trash.length === 0) {
+      container.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">ゴミ箱は空です（1週間で自動消去されます）</div>';
+    } else {
+      appState.trash.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'trash-item';
+        const deleteDateStr = new Date(item.deletedAt).toLocaleDateString();
+        div.innerHTML = `
+          <div>
+            <div>${escapeHtml(item.task.title)}</div>
+            <div class="trash-meta">削除日: ${deleteDateStr}</div>
+          </div>
+          <button class="btn btn-sm btn-primary" onclick="restoreTrashItem(${index})">復元</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+    openModal('trashModal');
+  }
+
+  function restoreTrashItem(index) {
+    const restored = appState.trash.splice(index, 1)[0];
+    if (restored) {
+      let ws = appState.workspaces[restored.workspaceId] || getCurrentWorkspace();
+      ws.tasks.push(restored.task);
+      saveToStorage();
+      renderFilterTabs();
+      renderTasks();
+      openTrashModal();
+    }
+  }
+
+  /* 自動プッシュ通知判定 (通知あり設定のタスクのみ実行) */
+  function requestNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+
+  function checkNotifications() {
+    if (!('Notification' in window) || Notification.permission !== 'granted') return;
+
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+    const currentHM = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+
+    Object.values(appState.workspaces).forEach(ws => {
+      ws.tasks.forEach(task => {
+        // 通知がオフ(false)の場合はスキップ
+        if (task.completed || !task.dueDate || task.notifyEnable === false || task.notifyEnable === 'false') return;
+
+        const taskDate = new Date(task.dueDate + 'T00:00:00');
+        const todayDate = new Date(todayStr + 'T00:00:00');
+        const diffDays = Math.round((taskDate - todayDate) / (1000 * 60 * 60 * 24));
+
+        const is3DaysBefore1900 = (diffDays === 3 && currentHM === '19:00');
+        const isSameDay0500 = (diffDays === 0 && currentHM === '05:00');
+
+        if (is3DaysBefore1900 || isSameDay0500) {
+          const timingText = isSameDay0500 ? '【本日が期限です】' : '【期限3日前です】';
+          new Notification(`${timingText} ${task.title}`, {
+            body: `期限日: ${task.dueDate}\nタスクを確認・実行しましょう！`
+          });
+        }
+      });
+    });
+  }
+
+  /* カテゴリ編集モーダル */
   let tempCategories = [];
 
   function openCatManageModal() {
@@ -1099,12 +1287,18 @@
 
       row.innerHTML = `
         <input type="text" value="${escapeHtml(cat.name)}" onchange="tempCategories[${index}].name = this.value.trim()">
-        <select class="color-picker-select" onchange="tempCategories[${index}].color = this.value">
+        <select style="font-size:0.8rem; padding:4px;" onchange="tempCategories[${index}].color = this.value">
           ${colorOptionsHtml}
         </select>
-        <button class="icon-btn" onclick="moveCategory(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.2"' : ''}>⬆️</button>
-        <button class="icon-btn" onclick="moveCategory(${index}, 1)" ${index === tempCategories.length - 1 ? 'disabled style="opacity:0.2"' : ''}>⬇️</button>
-        <button class="icon-btn" onclick="removeTempCategory(${index})">🗑️</button>
+        <button class="icon-btn" onclick="moveCategory(${index}, -1)" ${index === 0 ? 'disabled style="opacity:0.2"' : ''}>
+          <span class="icon icon-sm"><svg><use href="#icon-arrow-up"/></svg></span>
+        </button>
+        <button class="icon-btn" onclick="moveCategory(${index}, 1)" ${index === tempCategories.length - 1 ? 'disabled style="opacity:0.2"' : ''}>
+          <span class="icon icon-sm"><svg><use href="#icon-arrow-down"/></svg></span>
+        </button>
+        <button class="icon-btn" onclick="removeTempCategory(${index})">
+          <span class="icon icon-sm"><svg><use href="#icon-trash"/></svg></span>
+        </button>
       `;
       container.appendChild(row);
     });
@@ -1113,7 +1307,7 @@
   function addNewCategoryField() {
     tempCategories.push({
       id: 'cat_' + Date.now(),
-      name: '新しいカテゴリ',
+      name: '新規カテゴリ',
       color: COLOR_OPTIONS[tempCategories.length % COLOR_OPTIONS.length].key
     });
     renderCatEditList();
@@ -1145,9 +1339,7 @@
     const defaultCatId = ws.categories[0].id;
 
     ws.tasks.forEach(task => {
-      if (!validIds.includes(task.categoryId)) {
-        task.categoryId = defaultCatId;
-      }
+      if (!validIds.includes(task.categoryId)) task.categoryId = defaultCatId;
     });
 
     saveToStorage();
@@ -1157,9 +1349,7 @@
     closeModal('catModal');
   }
 
-  /* =========================================================
-     バックアップ・インポート/エクスポート
-     ========================================================= */
+  /* バックアップ機能 */
   function openDataModal() {
     document.getElementById('jsonArea').value = JSON.stringify(appState, null, 2);
     openModal('dataModal');
@@ -1169,7 +1359,7 @@
     const area = document.getElementById('jsonArea');
     area.select();
     document.execCommand('copy');
-    alert("バックアップデータをクリップボードにコピーしました！");
+    alert("バックアップデータをコピーしました！");
   }
 
   function importDataText() {
@@ -1183,37 +1373,23 @@
         renderWorkspaceSelect();
         renderCategorySelect();
         renderFilterTabs();
+        renderHistoryDatalist();
         renderTasks();
         closeModal('dataModal');
         alert("データを正常に復元・更新しました！");
-      } else {
-        alert("無効なデータ形式です。");
       }
     } catch(e) {
-      alert("JSONデータの解析に失敗しました。正しくコピーされているかご確認ください。");
+      alert("データの読み込みに失敗しました。");
     }
   }
 
-  /* =========================================================
-     ヘルパー関数
-     ========================================================= */
-  function openModal(id) {
-    document.getElementById(id).classList.add('active');
-  }
-
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('active');
-  }
-
+  /* モーダルヘルパー */
+  function openModal(id) { document.getElementById(id).classList.add('active'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('active'); }
   function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  // アプリ起動
   init();
 </script>
 </body>
